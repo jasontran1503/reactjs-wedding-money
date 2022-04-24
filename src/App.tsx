@@ -1,26 +1,40 @@
+import Loading from 'layouts/Loading';
 import React from 'react';
-import logo from './logo.svg';
+import { Navigate, useRoutes } from 'react-router-dom';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const MainLayout = React.lazy(() => import('./layouts/MainLayout'));
+const NotFound = React.lazy(() => import('./layouts/NotFound'));
+
+const App = () => {
+  const routes = useRoutes([
+    // {
+    //   path: '',
+    //   element: <Navigate to=""></Navigate>
+    // },
+    {
+      path: '/*',
+      element: (
+        <React.Suspense fallback={<Loading />}>
+          <MainLayout />
+        </React.Suspense>
+      )
+    },
+    {
+      path: '404',
+      element: (
+        <React.Suspense fallback={<Loading />}>
+          <NotFound />
+        </React.Suspense>
+      )
+    },
+    {
+      path: '*',
+      element: <Navigate to="404"></Navigate>
+    }
+  ]);
+
+  return <>{routes}</>;
+};
 
 export default App;
