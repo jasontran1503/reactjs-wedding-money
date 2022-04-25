@@ -1,13 +1,45 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { authActions } from '../authActions';
+import { useAuth } from '../authContext';
+import './Style.css';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { LoginRequest } from '../authModel';
+import { useForm } from 'react-hook-form';
 
 const Login = () => {
+  const { state, dispatch } = useAuth();
+
+  const validation = yup.object().shape({
+    email: yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
+    password: yup
+      .string()
+      .required('Mật khẩu không được để trống')
+      .min(6, 'Mật khẩu dài từ 6 đến 20 ký tự')
+      .max(20, 'Mật khẩu dài từ 6 đến 20 ký tự')
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<LoginRequest>({
+    mode: 'onTouched',
+    resolver: yupResolver(validation)
+  });
+
+  const onSubmit = async (data: LoginRequest) => {
+    console.log(state);
+    dispatch(authActions.login({ email: 'sontx', password: '111111' }));
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Box
         sx={{
           display: 'flex',
@@ -29,17 +61,34 @@ const Login = () => {
           component="div"
           sx={{ flexGrow: 1 }}
         >
-          Login
+          Đăng nhập
         </Typography>
-        <TextField label="Email" variant="outlined" margin="normal" />
-        <TextField label="Password" variant="outlined" type={'password'} margin="normal" />
-        <Button variant="contained" style={{ marginTop: '16px' }}>
-          Login
+        <TextField
+          error={errors.email ? true : false}
+          label="Email"
+          variant="outlined"
+          margin="normal"
+          id={errors.email && `outlined-error-helper-text`}
+          helperText={errors.email && errors.email?.message}
+          {...register('email')}
+        />
+        <TextField
+          error={errors.password ? true : false}
+          label="Mật khẩu"
+          variant="outlined"
+          type={'password'}
+          margin="normal"
+          id={errors.password && `outlined-error-helper-text`}
+          helperText={errors.password && errors.password?.message}
+          {...register('password')}
+        />
+        <Button variant="contained" style={{ marginTop: '16px' }} type="submit">
+          Đăng nhập
         </Button>
         <span style={{ marginTop: '16px', textAlign: 'center' }}>
-          <RouterLink to="/auth/register">
-            <Link>Need an account?</Link>
-          </RouterLink>
+          <Link to="/auth/register" className="text-navigate">
+            Tạo tài khoản?
+          </Link>
         </span>
       </Box>
     </form>
