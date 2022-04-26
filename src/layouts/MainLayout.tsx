@@ -1,3 +1,5 @@
+import Profile from 'features/auth/components/Profile';
+import WeddingMoney from 'features/wedding-money/WeddingMoney';
 import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import Footer from './Footer';
@@ -17,6 +19,22 @@ const MainLayout = () => {
       element: (
         <React.Suspense fallback={<Loading />}>
           <Auth />
+        </React.Suspense>
+      )
+    },
+    {
+      path: 'profile',
+      element: (
+        <React.Suspense fallback={<Loading />}>
+          <Profile />
+        </React.Suspense>
+      )
+    },
+    {
+      path: 'home/*',
+      element: (
+        <React.Suspense fallback={<Loading />}>
+          <WeddingMoney />
         </React.Suspense>
       )
     }

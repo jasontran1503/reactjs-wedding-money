@@ -7,11 +7,12 @@ export interface DataResponse<T> {
 }
 
 const axiosApi = axios.create({
-  baseURL: 'localhost:5000/api/',
+  baseURL: 'http://localhost:8000/api/',
   // baseURL: 'https://wedding-money.herokuapp.com/api/',
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 });
 
 axiosApi.interceptors.request.use(
@@ -25,11 +26,12 @@ axiosApi.interceptors.request.use(
 
 axiosApi.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data;
+    return response;
   },
   (error) => {
     switch (error.response.status) {
       case 401:
+        console.log(error)
         // navigate('/register');
         break;
       case 404:

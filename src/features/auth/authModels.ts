@@ -9,3 +9,12 @@ export interface RegisterRequest {
   password: string;
   confirmPassword: string;
 }
+
+export interface User {
+  createdAt: string;
+  email: string;
+  password: string;
+  updatedAt: string;
+  username: string;
+  _id: string;
+}

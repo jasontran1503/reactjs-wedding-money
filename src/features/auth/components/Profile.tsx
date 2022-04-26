@@ -1,26 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import { LoadingButton } from '@mui/lab';
+import { Box, TextField, Typography } from '@mui/material';
 import authApi from 'apis/authApi';
 import { DataResponse } from 'apis/axiosApi';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { authActions } from '../authActions';
 import { useAuth } from '../authContext';
 import { RegisterRequest } from '../authModels';
-import './Style.css';
 
-const Register = () => {
+const Profile = () => {
   const { state, dispatch } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const validation = yup.object().shape({
-    email: yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
     username: yup
       .string()
       .required('Tên không được để trống')
@@ -79,17 +75,8 @@ const Register = () => {
           component="div"
           sx={{ flexGrow: 1 }}
         >
-          Đăng ký
+          Thông tin
         </Typography>
-        <TextField
-          error={errors.email ? true : false}
-          label="Email"
-          variant="outlined"
-          margin="normal"
-          id={errors.email && `outlined-error-helper-text`}
-          helperText={errors.email && errors.email?.message}
-          {...register('email')}
-        />
         <TextField
           error={errors.username ? true : false}
           label="Tên"
@@ -128,16 +115,11 @@ const Register = () => {
           color="primary"
           disabled={loading ? true : false}
         >
-          Đăng ký
+          Cập nhật
         </LoadingButton>
-        <span style={{ marginTop: '16px', textAlign: 'center' }}>
-          <Link to="/auth/login" className="text-navigate">
-            Đăng nhập ngay?
-          </Link>
-        </span>
       </Box>
     </form>
   );
 };
 
-export default Register;
+export default Profile;

@@ -15,7 +15,11 @@ const AuthContext = createContext<AuthContextProps>({
 export const AuthProvider = (props: React.PropsWithChildren<{}>) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  return <AuthContext.Provider value={{ state, dispatch }} {...props}></AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ state, dispatch }} {...props}>
+      {props.children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

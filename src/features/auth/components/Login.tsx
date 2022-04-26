@@ -1,18 +1,29 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
+import authApi from 'apis/authApi';
+import { DataResponse } from 'apis/axiosApi';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import * as yup from 'yup';
 import { authActions } from '../authActions';
 import { useAuth } from '../authContext';
+import { LoginRequest } from '../authModels';
 import './Style.css';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { LoginRequest } from '../authModel';
-import { useForm } from 'react-hook-form';
 
 const Login = () => {
   const { state, dispatch } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      navigate('/home');
+    }
+  }, [state.isAuthenticated]);
 
   const validation = yup.object().shape({
     email: yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
@@ -33,9 +44,17 @@ const Login = () => {
     resolver: yupResolver(validation)
   });
 
-  const onSubmit = async (data: LoginRequest) => {
-    console.log(state);
-    dispatch(authActions.login({ email: 'sontx', password: '111111' }));
+  const onSubmit = async (request: LoginRequest) => {
+    try {
+      setLoading(true);
+      await authApi.login(request);
+      dispatch(authActions.login());
+      reset();
+      navigate('/home');
+    } catch (error) {
+      alert((error as DataResponse<null>).message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,9 +101,17 @@ const Login = () => {
           helperText={errors.password && errors.password?.message}
           {...register('password')}
         />
-        <Button variant="contained" style={{ marginTop: '16px' }} type="submit">
+        <LoadingButton
+          size="medium"
+          loading={loading}
+          variant="contained"
+          style={{ marginTop: '16px' }}
+          type="submit"
+          color="primary"
+          disabled={loading ? true : false}
+        >
           Đăng nhập
-        </Button>
+        </LoadingButton>
         <span style={{ marginTop: '16px', textAlign: 'center' }}>
           <Link to="/auth/register" className="text-navigate">
             Tạo tài khoản?

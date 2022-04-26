@@ -1,26 +1,43 @@
-import { AuthAction, LOGIN } from './authActions';
+import { AuthAction, GET_CURRENT_USER, IS_AUTHEN, LOGIN, LOGOUT, REGISTER } from './authActions';
+import { User } from './authModels';
 
 export interface AuthState {
   isAuthenticated: boolean;
-  user: any | null;
+  user: User | null;
   isLoading: boolean;
-  error: any | null;
 }
 
 export const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
-  isLoading: false,
-  error: null
+  isLoading: false
 };
 
 export const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case LOGIN:
-      console.log(state);
-      console.log(action);
+      return {
+        ...state,
+        isAuthenticated: true
+      };
+    case REGISTER:
       return state;
-
+    case LOGOUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: null
+      };
+    case IS_AUTHEN:
+      return {
+        ...state,
+        isAuthenticated: action.payload
+      };
+    case GET_CURRENT_USER:
+      return {
+        ...state,
+        user: action.payload
+      };
     default:
       return state;
   }

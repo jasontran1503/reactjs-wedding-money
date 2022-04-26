@@ -1,24 +1,24 @@
-import { LoginRequest, RegisterRequest } from 'features/auth/authModel';
-import axiosApi from './axiosApi';
+import { LoginRequest, RegisterRequest, User } from 'features/auth/authModels';
+import axiosApi, { DataResponse } from './axiosApi';
 
-const login = (body: LoginRequest) => {
-  return axiosApi.post('auth/login', body);
+const login = async (body: LoginRequest) => {
+  return axiosApi.post<DataResponse<string>>('auth/login', body).then((res) => res.data);
 };
 
-const register = (body: RegisterRequest) => {
-  return axiosApi.post('auth/register', body);
+const register = async (body: RegisterRequest) => {
+  return axiosApi.post<DataResponse<User>>('auth/register', body).then((res) => res.data);
 };
 
-const logout = () => {
-  return axiosApi.post('auth/logout');
+const logout = async () => {
+  return axiosApi.post('auth/logout').then((res) => res.data);
 };
 
-const getCurrentUser = () => {
-  return axiosApi.get('auth/user');
+const getCurrentUser = async () => {
+  return axiosApi.get<DataResponse<User>>('auth/user').then((res) => res.data);
 };
 
-const isAuthenticated = () => {
-  return axiosApi.get('auth/is-auth');
+const isAuthenticated = async () => {
+  return axiosApi.get<DataResponse<boolean>>('auth/is-auth').then((res) => res.data);
 };
 
 const authApi = {
