@@ -1,12 +1,12 @@
-import Profile from 'features/auth/components/Profile';
-import WeddingMoney from 'features/wedding-money/WeddingMoney';
+import { MoneyProvider } from 'features/wedding-money/moneyContext';
 import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
-import Footer from './Footer';
 import Header from './Header';
 import Loading from './Loading';
 
 const Auth = React.lazy(() => import('../features/auth/Auth'));
+const Profile = React.lazy(() => import('../features/auth/components/Profile'));
+const Money = React.lazy(() => import('../features/wedding-money/Money'));
 
 const MainLayout = () => {
   const routes = useRoutes([
@@ -34,7 +34,9 @@ const MainLayout = () => {
       path: 'home/*',
       element: (
         <React.Suspense fallback={<Loading />}>
-          <WeddingMoney />
+          <MoneyProvider>
+            <Money />
+          </MoneyProvider>
         </React.Suspense>
       )
     }

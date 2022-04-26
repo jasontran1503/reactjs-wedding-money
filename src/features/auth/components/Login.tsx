@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import authApi from 'apis/authApi';
 import { DataResponse } from 'apis/axiosApi';
+import { useToastify } from 'hooks/useToastify';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ const Login = () => {
   const { state, dispatch } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const toastify = useToastify;
 
   useEffect(() => {
     if (state.isAuthenticated) {
@@ -52,7 +54,7 @@ const Login = () => {
       reset();
       navigate('/home');
     } catch (error) {
-      alert((error as DataResponse<null>).message);
+      toastify('error', (error as DataResponse<null>).message);
       setLoading(false);
     }
   };

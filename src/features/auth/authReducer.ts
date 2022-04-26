@@ -4,13 +4,11 @@ import { User } from './authModels';
 export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
-  isLoading: boolean;
 }
 
 export const initialState: AuthState = {
   isAuthenticated: false,
-  user: null,
-  isLoading: false
+  user: null
 };
 
 export const authReducer = (state: AuthState, action: AuthAction): AuthState => {

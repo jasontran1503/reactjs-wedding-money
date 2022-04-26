@@ -10,10 +10,11 @@ import authApi from 'apis/authApi';
 import { DataResponse } from 'apis/axiosApi';
 import { authActions } from 'features/auth/authActions';
 import { useAuth } from 'features/auth/authContext';
-import { useSnackbar } from 'hooks/useSnackbar';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CustomizedSnackbars from './CustomizedSnackbars';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import LogoutIcon from '@mui/icons-material/Logout';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const Header = () => {
   const { state, dispatch } = useAuth();
@@ -22,11 +23,6 @@ const Header = () => {
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  };
-
-  const handleNavigateProfile = () => {
-    setAnchorEl(null);
-    navigate('/profile');
   };
 
   const handleLogout = async () => {
@@ -97,8 +93,28 @@ const Header = () => {
                 open={Boolean(anchorEl)}
                 onClose={() => setAnchorEl(null)}
               >
-                <MenuItem onClick={handleNavigateProfile}>Profile</MenuItem>
-                <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setAnchorEl(null);
+                    navigate('/profile');
+                  }}
+                >
+                  <ManageAccountsIcon />
+                  <span style={{ marginLeft: '10px' }}>Cài đặt thông tin</span>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setAnchorEl(null);
+                    navigate('/profile');
+                  }}
+                >
+                  <AddCircleIcon />
+                  <span style={{ marginLeft: '10px' }}>Tạo mới</span>
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                  <LogoutIcon />
+                  <span style={{ marginLeft: '10px' }}>Đăng xuất</span>
+                </MenuItem>
               </Menu>
             </div>
           )}

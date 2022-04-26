@@ -2,6 +2,8 @@ import Loading from 'layouts/Loading';
 import React from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 import './App.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MainLayout = React.lazy(() => import('./layouts/MainLayout'));
 const NotFound = React.lazy(() => import('./layouts/NotFound'));
@@ -34,7 +36,12 @@ const App = () => {
     }
   ]);
 
-  return <>{routes}</>;
+  return (
+    <>
+      {routes}
+      <ToastContainer />
+    </>
+  );
 };
 
 export default App;

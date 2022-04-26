@@ -1,4 +1,4 @@
-import { LoginRequest, RegisterRequest, User } from './authModels';
+import { User } from './authModels';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
@@ -10,7 +10,7 @@ export type AuthAction =
   | { type: typeof LOGIN }
   | { type: typeof REGISTER }
   | { type: typeof LOGOUT }
-  | { type: typeof GET_CURRENT_USER; payload: any }
+  | { type: typeof GET_CURRENT_USER; payload: User }
   | { type: typeof IS_AUTHEN; payload: boolean };
 
 const login = (): AuthAction => ({
