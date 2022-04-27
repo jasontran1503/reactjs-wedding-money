@@ -105,7 +105,7 @@ const Header = () => {
                 <MenuItem
                   onClick={() => {
                     setAnchorEl(null);
-                    navigate('/profile');
+                    navigate('/home/editor');
                   }}
                 >
                   <AddCircleIcon />

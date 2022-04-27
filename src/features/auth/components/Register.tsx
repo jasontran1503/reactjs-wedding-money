@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import authApi from 'apis/authApi';
 import { DataResponse } from 'apis/axiosApi';
+import { useToastify } from 'hooks/useToastify';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ const Register = () => {
   const { state, dispatch } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const toastify = useToastify;
 
   const validation = yup.object().shape({
     email: yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
@@ -46,12 +48,13 @@ const Register = () => {
   const onSubmit = async (data: RegisterRequest) => {
     try {
       setLoading(true);
-      await authApi.register(data);
+      const { message } = await authApi.register(data);
       dispatch(authActions.register());
       reset();
+      toastify('success', message);
       navigate('/auth/login');
     } catch (error) {
-      alert((error as DataResponse<null>).message);
+      toastify('error', (error as DataResponse<null>).message);
       setLoading(false);
     }
   };

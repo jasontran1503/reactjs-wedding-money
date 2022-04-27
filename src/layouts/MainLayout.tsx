@@ -1,6 +1,7 @@
 import { MoneyProvider } from 'features/wedding-money/moneyContext';
 import React from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
+import { GuardRoute, GuardAuthRoute } from './GuardRoute';
 import Header from './Header';
 import Loading from './Loading';
 
@@ -18,7 +19,9 @@ const MainLayout = () => {
       path: 'auth/*',
       element: (
         <React.Suspense fallback={<Loading />}>
-          <Auth />
+          <GuardAuthRoute>
+            <Auth />
+          </GuardAuthRoute>
         </React.Suspense>
       )
     },
@@ -26,7 +29,9 @@ const MainLayout = () => {
       path: 'profile',
       element: (
         <React.Suspense fallback={<Loading />}>
-          <Profile />
+          <GuardRoute>
+            <Profile />
+          </GuardRoute>
         </React.Suspense>
       )
     },
@@ -35,7 +40,9 @@ const MainLayout = () => {
       element: (
         <React.Suspense fallback={<Loading />}>
           <MoneyProvider>
-            <Money />
+            <GuardRoute>
+              <Money />
+            </GuardRoute>
           </MoneyProvider>
         </React.Suspense>
       )

@@ -21,12 +21,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const toastify = useToastify;
 
-  useEffect(() => {
-    if (state.isAuthenticated) {
-      navigate('/home');
-    }
-  }, [state.isAuthenticated]);
-
   const validation = yup.object().shape({
     email: yup.string().required('Email không được để trống').email('Email không đúng định dạng'),
     password: yup
