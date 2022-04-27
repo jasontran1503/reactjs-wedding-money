@@ -9,7 +9,8 @@ const Money = () => {
       path: '',
       children: [
         { path: '', element: <MoneyHome /> },
-        { path: 'editor', element: <MoneyEditor /> }
+        { path: 'editor', element: <MoneyEditor /> },
+        { path: 'editor/:moneyId', element: <MoneyEditor /> }
       ]
     }
   ]);

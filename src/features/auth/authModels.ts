@@ -10,6 +10,13 @@ export interface RegisterRequest {
   confirmPassword: string;
 }
 
+export interface ProfileRequest {
+  username: string;
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
 export interface User {
   createdAt: string;
   email: string;

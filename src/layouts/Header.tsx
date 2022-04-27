@@ -1,4 +1,7 @@
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -10,15 +13,14 @@ import authApi from 'apis/authApi';
 import { DataResponse } from 'apis/axiosApi';
 import { authActions } from 'features/auth/authActions';
 import { useAuth } from 'features/auth/authContext';
+import { useToastify } from 'hooks/useToastify';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import LogoutIcon from '@mui/icons-material/Logout';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const Header = () => {
   const { state, dispatch } = useAuth();
   const navigate = useNavigate();
+  const toastify = useToastify;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -37,22 +39,42 @@ const Header = () => {
   };
 
   useEffect(() => {
+    let isCancelled = false;
     const isAuththen = async () => {
-      const { data } = await authApi.isAuthenticated();
-      dispatch(authActions.isAuthenticated(data));
+      try {
+        if (!isCancelled) {
+          const { data } = await authApi.isAuthenticated();
+          dispatch(authActions.isAuthenticated(data));
+        }
+      } catch (error) {
+        toastify('error', (error as DataResponse<null>).message);
+      }
     };
 
     isAuththen();
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   useEffect(() => {
+    let isCancelled = false;
     if (state.isAuthenticated) {
       const getCurrentUser = async () => {
-        const { data } = await authApi.getCurrentUser();
-        dispatch(authActions.getCurrentUser(data));
+        try {
+          if (!isCancelled) {
+            const { data } = await authApi.getCurrentUser();
+            dispatch(authActions.getCurrentUser(data));
+          }
+        } catch (error) {
+          toastify('error', (error as DataResponse<null>).message);
+        }
       };
 
       getCurrentUser();
+      return () => {
+        isCancelled = true;
+      };
     }
   }, [state.isAuthenticated]);
 

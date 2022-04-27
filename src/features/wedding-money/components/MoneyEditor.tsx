@@ -1,55 +1,88 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { Box, TextField } from '@mui/material';
-import { useAuth } from 'features/auth/authContext';
+import { DataResponse } from 'apis/axiosApi';
+import moneyApi from 'apis/moneyApi';
 import { useToastify } from 'hooks/useToastify';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
+import { moneyActions } from '../moneyActions';
+import { useMoney } from '../moneyContext';
+import { MoneyRequest } from '../moneyModels';
 
 const MoneyEditor = () => {
-  const { state, dispatch } = useAuth();
+  const { state, dispatch } = useMoney();
   const navigate = useNavigate();
+  const { moneyId } = useParams();
   const [loading, setLoading] = useState(false);
   const toastify = useToastify;
 
   const validation = yup.object().shape({
-    name: yup
+    name: yup.string().required('Tên không được để trống'),
+    money: yup
       .string()
-      .required('Tên không được để trống')
-      .matches(/^[a-zA-Z0-9]*$/, 'Tên chỉ chứa ký tự số và chữ'),
-    phoneNumber: yup
-      .string()
-      .required('Mật khẩu không được để trống')
-      .min(4, 'Mật khẩu dài từ 4 đến 20 ký tự')
-      .max(20, 'Mật khẩu dài từ 4 đến 20 ký tự'),
-    money: yup.string().oneOf([yup.ref('password'), null], 'Mật khẩu không trùng khớp'),
-    note: yup.string().oneOf([yup.ref('password'), null], 'Mật khẩu không trùng khớp')
+      .required('Số tiền không được để trống')
+      .matches(/^[0-9]*$/, 'Số tiền chỉ chứa ký tự số')
   });
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors }
   } = useForm<any>({
     mode: 'onTouched',
     resolver: yupResolver(validation)
   });
 
-  const onSubmit = async (data: any) => {
-    // try {
-    //   setLoading(true);
-    //   const { message } = await authApi.register(data);
-    //   dispatch(authActions.register());
-    //   reset();
-    //   toastify('success', message);
-    //   navigate('/auth/login');
-    // } catch (error) {
-    //   toastify('error', (error as DataResponse<null>).message);
-    //   setLoading(false);
-    // }
+  useEffect(() => {
+    let isCancelled = false;
+
+    const getMoneyById = async () => {
+      try {
+        if (!isCancelled) {
+          if (moneyId) {
+            const { data } = await moneyApi.getMoneyById(moneyId);
+            dispatch(moneyActions.getMoneyById());
+            setValue('name', data.name);
+            setValue('phoneNumber', data.phoneNumber);
+            setValue('note', data.note);
+            setValue('money', data.money);
+          }
+        }
+      } catch (error) {
+        toastify('error', (error as DataResponse<null>).message);
+      }
+    };
+
+    getMoneyById();
+    return () => {
+      isCancelled = false;
+    };
+  }, []);
+
+  const onSubmit = async (body: MoneyRequest) => {
+    try {
+      setLoading(true);
+      if (!moneyId) {
+        const { message, data } = await moneyApi.createMoney(body);
+        dispatch(moneyActions.createMoney(data));
+        reset();
+        toastify('success', message);
+      } else {
+        const { message } = await moneyApi.updateMoney(body, moneyId);
+        dispatch(moneyActions.updateMoney());
+        navigate('/home');
+        toastify('success', message);
+      }
+      setLoading(false);
+    } catch (error) {
+      toastify('error', (error as DataResponse<null>).message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,20 +103,21 @@ const MoneyEditor = () => {
         }}
       >
         <TextField
+          error={errors.name ? true : false}
           label="Tên"
           variant="outlined"
           margin="normal"
           id={errors.name && `outlined-error-helper-text`}
+          InputLabelProps={{ shrink: true }}
           helperText={errors.name && errors.name?.message}
+          disabled={moneyId ? true : false}
           {...register('name')}
         />
         <TextField
-          error={errors.phoneNumber ? true : false}
           label="Số điện thoại"
           variant="outlined"
           margin="normal"
-          id={errors.phoneNumber && `outlined-error-helper-text`}
-          helperText={errors.phoneNumber && errors.phoneNumber?.message}
+          InputLabelProps={{ shrink: true }}
           {...register('phoneNumber')}
         />
         <TextField
@@ -93,16 +127,15 @@ const MoneyEditor = () => {
           margin="normal"
           id={errors.money && `outlined-error-helper-text`}
           helperText={errors.money && errors.money?.message}
+          InputLabelProps={{ shrink: true }}
           {...register('money')}
         />
         <TextField
-          error={errors.note ? true : false}
           label="Ghi chú"
           variant="outlined"
           margin="normal"
-          id={errors.password && `outlined-error-helper-text`}
-          helperText={errors.note && errors.note?.message}
           {...register('note')}
+          InputLabelProps={{ shrink: true }}
         />
         <LoadingButton
           size="medium"

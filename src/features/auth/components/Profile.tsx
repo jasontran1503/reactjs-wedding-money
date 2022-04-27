@@ -3,51 +3,68 @@ import { LoadingButton } from '@mui/lab';
 import { Box, TextField, Typography } from '@mui/material';
 import authApi from 'apis/authApi';
 import { DataResponse } from 'apis/axiosApi';
-import React, { useState } from 'react';
+import { useToastify } from 'hooks/useToastify';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { authActions } from '../authActions';
 import { useAuth } from '../authContext';
-import { RegisterRequest } from '../authModels';
+import { ProfileRequest } from '../authModels';
 
 const Profile = () => {
   const { state, dispatch } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const toastify = useToastify;
 
   const validation = yup.object().shape({
     username: yup
       .string()
       .required('Tên không được để trống')
       .matches(/^[a-zA-Z0-9]*$/, 'Tên chỉ chứa ký tự số và chữ'),
-    password: yup
+    oldPassword: yup
       .string()
-      .required('Mật khẩu không được để trống')
+      .required('Mật khẩu cũ không được để trống')
       .min(4, 'Mật khẩu dài từ 4 đến 20 ký tự')
       .max(20, 'Mật khẩu dài từ 4 đến 20 ký tự'),
-    confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Mật khẩu không trùng khớp')
+    newPassword: yup
+      .string()
+      .required('Mật khẩu mới không được để trống')
+      .min(4, 'Mật khẩu dài từ 4 đến 20 ký tự')
+      .max(20, 'Mật khẩu dài từ 4 đến 20 ký tự'),
+    confirmNewPassword: yup
+      .string()
+      .oneOf([yup.ref('newPassword'), null], 'Mật khẩu mới không trùng khớp')
   });
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors }
-  } = useForm<RegisterRequest>({
+  } = useForm<ProfileRequest>({
     mode: 'onTouched',
     resolver: yupResolver(validation)
   });
 
-  const onSubmit = async (data: RegisterRequest) => {
+  useEffect(() => {
+    if (state.user) {
+      const { username } = state.user;
+      setValue('username', username);
+    }
+  }, []);
+
+  const onSubmit = async (body: ProfileRequest) => {
     try {
       setLoading(true);
-      await authApi.register(data);
-      dispatch(authActions.register());
+      const { data } = await authApi.updateProfile(body);
+      dispatch(authActions.updateProfile(data));
       reset();
-      navigate('/auth/login');
+      navigate('/home');
     } catch (error) {
-      alert((error as DataResponse<null>).message);
+      toastify('error', (error as DataResponse<null>).message);
       setLoading(false);
     }
   };
@@ -84,27 +101,41 @@ const Profile = () => {
           margin="normal"
           id={errors.username && `outlined-error-helper-text`}
           helperText={errors.username && errors.username?.message}
+          InputLabelProps={{ shrink: true }}
           {...register('username')}
         />
         <TextField
-          error={errors.password ? true : false}
+          error={errors.oldPassword ? true : false}
           label="Mật khẩu"
           variant="outlined"
           type={'password'}
           margin="normal"
-          id={errors.password && `outlined-error-helper-text`}
-          helperText={errors.password && errors.password?.message}
-          {...register('password')}
+          id={errors.oldPassword && `outlined-error-helper-text`}
+          helperText={errors.oldPassword && errors.oldPassword?.message}
+          InputLabelProps={{ shrink: true }}
+          {...register('oldPassword')}
         />
         <TextField
-          error={errors.confirmPassword ? true : false}
+          error={errors.newPassword ? true : false}
+          label="Mật khẩu"
+          variant="outlined"
+          type={'password'}
+          margin="normal"
+          id={errors.newPassword && `outlined-error-helper-text`}
+          helperText={errors.newPassword && errors.newPassword?.message}
+          InputLabelProps={{ shrink: true }}
+          {...register('newPassword')}
+        />
+        <TextField
+          error={errors.confirmNewPassword ? true : false}
           label="Nhập lại mật khẩu"
           variant="outlined"
           type={'password'}
           margin="normal"
-          id={errors.password && `outlined-error-helper-text`}
-          helperText={errors.confirmPassword && errors.confirmPassword?.message}
-          {...register('confirmPassword')}
+          id={errors.confirmNewPassword && `outlined-error-helper-text`}
+          helperText={errors.confirmNewPassword && errors.confirmNewPassword?.message}
+          InputLabelProps={{ shrink: true }}
+          {...register('confirmNewPassword')}
         />
         <LoadingButton
           size="medium"

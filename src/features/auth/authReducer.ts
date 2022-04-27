@@ -1,4 +1,12 @@
-import { AuthAction, GET_CURRENT_USER, IS_AUTHEN, LOGIN, LOGOUT, REGISTER } from './authActions';
+import {
+  AuthAction,
+  GET_CURRENT_USER,
+  IS_AUTHEN,
+  LOGIN,
+  LOGOUT,
+  REGISTER,
+  UPDATE_PROFILE
+} from './authActions';
 import { User } from './authModels';
 
 export interface AuthState {
@@ -32,6 +40,11 @@ export const authReducer = (state: AuthState, action: AuthAction): AuthState => 
         isAuthenticated: action.payload
       };
     case GET_CURRENT_USER:
+      return {
+        ...state,
+        user: action.payload
+      };
+    case UPDATE_PROFILE:
       return {
         ...state,
         user: action.payload

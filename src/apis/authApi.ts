@@ -1,4 +1,4 @@
-import { LoginRequest, RegisterRequest, User } from 'features/auth/authModels';
+import { LoginRequest, ProfileRequest, RegisterRequest, User } from 'features/auth/authModels';
 import axiosApi, { DataResponse } from './axiosApi';
 
 const login = async (body: LoginRequest) => {
@@ -17,6 +17,10 @@ const getCurrentUser = async () => {
   return axiosApi.get<DataResponse<User>>('auth/user').then((res) => res.data);
 };
 
+const updateProfile = async (body: ProfileRequest) => {
+  return axiosApi.put<DataResponse<User>>('auth/update-profile', body).then((res) => res.data);
+};
+
 const isAuthenticated = async () => {
   return axiosApi.get<DataResponse<boolean>>('auth/is-auth').then((res) => res.data);
 };
@@ -26,7 +30,8 @@ const authApi = {
   register,
   getCurrentUser,
   logout,
-  isAuthenticated
+  isAuthenticated,
+  updateProfile
 };
 
 export default authApi;

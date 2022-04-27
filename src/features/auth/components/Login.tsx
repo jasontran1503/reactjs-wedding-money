@@ -26,8 +26,8 @@ const Login = () => {
     password: yup
       .string()
       .required('Mật khẩu không được để trống')
-      .min(6, 'Mật khẩu dài từ 6 đến 20 ký tự')
-      .max(20, 'Mật khẩu dài từ 6 đến 20 ký tự')
+      .min(4, 'Mật khẩu dài từ 4 đến 20 ký tự')
+      .max(20, 'Mật khẩu dài từ 4 đến 20 ký tự')
   });
 
   const {

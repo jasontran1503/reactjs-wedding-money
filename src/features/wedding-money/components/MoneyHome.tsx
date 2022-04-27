@@ -62,7 +62,14 @@ const MoneyHome = () => {
   };
 
   useEffect(() => {
-    searchMoney();
+    let isCancelled = false;
+    if (!isCancelled) {
+      searchMoney();
+    }
+
+    return () => {
+      isCancelled = false;
+    };
   }, []);
 
   const onSubmit = async (request: { name: string; phoneNumber: string }) => {
@@ -169,7 +176,7 @@ const MoneyHome = () => {
                           );
                         })}
                         <TableCell align="center">
-                          <span>
+                          <span onClick={() => navigate(`editor/${item._id}`)}>
                             <EditIcon cursor="pointer" color="primary" />
                           </span>
                           <span onClick={() => handleDeleteMoney(item._id)}>
