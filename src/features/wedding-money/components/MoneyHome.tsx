@@ -107,7 +107,7 @@ const MoneyHome = () => {
   };
 
   return (
-    <div style={{ width: '90%' }}>
+    <div style={{ width: '100%' }}>
       <Box
         onSubmit={handleSubmit(onSubmit)}
         component="form"
@@ -117,7 +117,7 @@ const MoneyHome = () => {
         noValidate
         autoComplete="off"
       >
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '16px', marginTop: '8px' }}>
           <TextField label="Tên" {...register('name')} />
           <TextField label="Số điện thoại" {...register('phoneNumber')} />
           <LoadingButton

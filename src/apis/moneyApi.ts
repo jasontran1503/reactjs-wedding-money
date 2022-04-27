@@ -24,7 +24,7 @@ const createMoney = async (body: MoneyRequest) => {
 
 const updateMoney = async (body: MoneyRequest, id: string) => {
   return axiosApi
-    .put<DataResponse<WeddingMoney>>(`wedding-money/create`, body, {
+    .put<DataResponse<WeddingMoney>>(`wedding-money/update`, body, {
       params: { id }
     })
     .then((res) => res.data);

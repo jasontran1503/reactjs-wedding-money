@@ -89,7 +89,7 @@ const Header = () => {
             style={{ cursor: 'pointer' }}
             onClick={() => navigate('/home')}
           >
-            Photos
+            Save Money
           </Typography>
           {state.isAuthenticated && (
             <div style={{ display: 'flex', alignItems: 'center' }}>

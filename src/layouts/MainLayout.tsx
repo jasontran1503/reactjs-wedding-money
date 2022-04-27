@@ -52,17 +52,7 @@ const MainLayout = () => {
   return (
     <>
       <Header />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: 'calc(100vh - 64px)',
-          width: '100%'
-        }}
-      >
-        {routes}
-      </div>
+      <div className="main-layout">{routes}</div>
       <Outlet />
       {/* <Footer /> */}
     </>

@@ -4,7 +4,7 @@ import { Box, TextField } from '@mui/material';
 import { DataResponse } from 'apis/axiosApi';
 import moneyApi from 'apis/moneyApi';
 import { useToastify } from 'hooks/useToastify';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
@@ -24,7 +24,7 @@ const MoneyEditor = () => {
     money: yup
       .string()
       .required('Số tiền không được để trống')
-      .matches(/^[0-9]*$/, 'Số tiền chỉ chứa ký tự số')
+      .matches(/^[0-9,]+$/, 'Số tiền chỉ chứa ký tự số')
   });
 
   const {
@@ -32,11 +32,16 @@ const MoneyEditor = () => {
     handleSubmit,
     reset,
     setValue,
+    getValues,
     formState: { errors }
   } = useForm<any>({
     mode: 'onTouched',
     resolver: yupResolver(validation)
   });
+
+  const formatMoney = (value: string) => {
+    setValue('money', Number(value.replace(/[^0-9]/g, '')).toLocaleString('en-US'));
+  }
 
   useEffect(() => {
     let isCancelled = false;
@@ -50,7 +55,7 @@ const MoneyEditor = () => {
             setValue('name', data.name);
             setValue('phoneNumber', data.phoneNumber);
             setValue('note', data.note);
-            setValue('money', data.money);
+            formatMoney(String(data.money));
           }
         }
       } catch (error) {
@@ -64,16 +69,22 @@ const MoneyEditor = () => {
     };
   }, []);
 
+  const handleMoneyInputChange = () => {
+    const value = getValues('money');
+    formatMoney(value);
+  };
+
   const onSubmit = async (body: MoneyRequest) => {
+    const request = { ...body, money: Number(String(body.money).replace(/,/g, '')) };
     try {
       setLoading(true);
       if (!moneyId) {
-        const { message, data } = await moneyApi.createMoney(body);
+        const { message, data } = await moneyApi.createMoney(request);
         dispatch(moneyActions.createMoney(data));
         reset();
         toastify('success', message);
       } else {
-        const { message } = await moneyApi.updateMoney(body, moneyId);
+        const { message } = await moneyApi.updateMoney(request, moneyId);
         dispatch(moneyActions.updateMoney());
         navigate('/home');
         toastify('success', message);
@@ -128,7 +139,9 @@ const MoneyEditor = () => {
           id={errors.money && `outlined-error-helper-text`}
           helperText={errors.money && errors.money?.message}
           InputLabelProps={{ shrink: true }}
-          {...register('money')}
+          {...register('money', {
+            onChange: () => handleMoneyInputChange()
+          })}
         />
         <TextField
           label="Ghi chú"
