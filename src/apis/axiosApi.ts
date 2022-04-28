@@ -7,8 +7,8 @@ export interface DataResponse<T> {
 }
 
 const axiosApi = axios.create({
-  baseURL: 'http://localhost:5000/api/',
-  // baseURL: 'https://wedding-money.herokuapp.com/api/',
+  // baseURL: 'http://localhost:8000/api/',
+  baseURL: 'https://wedding-money.herokuapp.com/api/',
   headers: {
     'Content-Type': 'application/json'
   },
@@ -31,10 +31,9 @@ axiosApi.interceptors.response.use(
   (error) => {
     switch (error.response.status) {
       case 401:
-        console.log(error)
         // navigate('/register');
         break;
-      case 404:
+        case 500:
         // case 403:
         // navigate('/');
         break;

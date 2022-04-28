@@ -34,7 +34,7 @@ const Header = () => {
       setAnchorEl(null);
       navigate('/auth');
     } catch (error) {
-      alert((error as DataResponse<null>).message);
+      toastify('error', (error as DataResponse<null>).message);
     }
   };
 
